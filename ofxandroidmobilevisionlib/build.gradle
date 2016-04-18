@@ -1,25 +1,43 @@
-apply plugin: 'com.android.library'
-
-android {
-    compileSdkVersion 23
-    buildToolsVersion "23.0.2"
-
-    defaultConfig {
-        minSdkVersion 22
-        targetSdkVersion 23
-        versionCode 1
-        versionName "1.0"
+// Top-level build file where you can add configuration options common to all sub-projects/modules.
+buildscript {
+    repositories {
+        jcenter()
     }
-    buildTypes {
-        release {
-            minifyEnabled false
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
-        }
+    dependencies {
+        classpath 'com.android.tools.build:gradle-experimental:0.7.0-alpha4'
     }
 }
 
+allprojects {
+    repositories {
+        jcenter()
+    }
+}
+apply plugin: 'com.android.model.library'
+
+model {
+    android {
+        compileSdkVersion = 22
+        buildToolsVersion = "23.0.2"
+
+        defaultConfig.with {
+            minSdkVersion.apiLevel 9
+            targetSdkVersion.apiLevel 22
+            versionCode 1
+            versionName "1.0"
+        }
+        buildTypes {
+            release {
+                minifyEnabled false
+            }
+        }
+    }
+
+}
+
+
 dependencies {
-    compile 'com.android.support:appcompat-v7:23.+'
+    compile 'com.android.support:appcompat-v7:22.+'
     compile 'com.google.android.gms:play-services-vision:8.4.0'
     compile fileTree(dir: 'libs', include: ['*.jar'])
     compile project(path: ':ofAndroidLib')

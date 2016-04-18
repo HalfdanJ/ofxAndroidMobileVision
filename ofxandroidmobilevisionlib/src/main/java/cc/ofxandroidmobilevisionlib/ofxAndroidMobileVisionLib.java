@@ -67,7 +67,7 @@ public class ofxAndroidMobileVisionLib {
 		}
 
 		Detector.Processor<Face> processor;
-
+/*
 		MultiProcessor.Factory<Face> factory = new MultiProcessor.Factory<Face>() {
 			@Override
 			public Tracker<Face> create(Face face) {
@@ -78,8 +78,14 @@ public class ofxAndroidMobileVisionLib {
 
 		};
 		processor = new MultiProcessor.Builder<>(factory).build();
-		detector.setProcessor(processor);
+		detector.setProcessor(processor);*/
 
+	}
+
+	public float joyVal;
+
+	public float joy(){
+		return joyVal;
 	}
 
 	public void update(byte[] bytes){
@@ -121,12 +127,13 @@ public class ofxAndroidMobileVisionLib {
 
 		//Bitmap bitmap = new Bitmap();
 		//
-		detector.receiveFrame(frame);
+	//	detector.receiveFrame(frame);
 		//Log.i(TAG, "Faces "+String.valueOf(faces.size()));
-/*
+
 		SparseArray<Face> faces = detector.detect(frame);
 		if(faces.size() > 0) {
 			Log.i(TAG,faces.get(faces.keyAt(0)).getIsSmilingProbability()+"  "+faces.get(faces.keyAt(0)).getLandmarks().size() );
-		}*/
+			joyVal = faces.get(faces.keyAt(0)).getIsSmilingProbability();
+		}
 	}
 }

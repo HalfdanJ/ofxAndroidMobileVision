@@ -9,7 +9,6 @@
 
 
 ofxAndroidMobileVision::ofxAndroidMobileVision(){
-    ofLogNotice("ofx")<<"TEST";
 
     if(!ofGetJavaVMPtr()){
         ofLogNotice("ofxAndroidMobileVision") << "setup(): couldn't find java virtual machine";
@@ -81,6 +80,18 @@ void ofxAndroidMobileVision::update(ofPixels pixels){
     env->SetByteArrayRegion( arr, 0, pixels.size(), (const signed char*) pixels.getData());
     env->CallVoidMethod(javaMobileVision,javaMethod, arr);
     return;
+}
+
+float ofxAndroidMobileVision::joy(){
+	JNIEnv *env = ofGetJNIEnv();
+	jmethodID javaMethod = env->GetMethodID(javaClass,"joy","()F");
+	if(!javaMethod ){
+		ofLogError("ofxAndroidMobileVision") << "joy(): couldn't get java joy for MobileVision";
+		return 0;
+	}
+
+	float ret = env->CallFloatMethod(javaMobileVision,javaMethod );
+	return ret;
 }
 
 #endif

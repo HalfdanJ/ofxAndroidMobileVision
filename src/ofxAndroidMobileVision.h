@@ -17,6 +17,8 @@ public:
     void setup();
     void update(ofPixels pixels);
 
+	float joy();
+
 private:
     jclass javaClass;
     jobject javaMobileVision;
