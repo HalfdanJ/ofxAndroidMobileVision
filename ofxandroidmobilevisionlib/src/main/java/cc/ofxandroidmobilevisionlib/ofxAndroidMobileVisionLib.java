@@ -82,10 +82,17 @@ public class ofxAndroidMobileVisionLib {
 
 	}
 
-	public float joyVal;
+	public float smileVal, leftEyeVal, rightEyeVal;
 
-	public float joy(){
-		return joyVal;
+	public float smileProbability(){
+		return smileVal;
+	}
+
+	public float leftEyeProbability(){
+		return leftEyeVal;
+	}
+	public float rightEyeProbability(){
+		return rightEyeVal;
 	}
 
 	public void update(byte[] bytes){
@@ -132,8 +139,9 @@ public class ofxAndroidMobileVisionLib {
 
 		SparseArray<Face> faces = detector.detect(frame);
 		if(faces.size() > 0) {
-			Log.i(TAG,faces.get(faces.keyAt(0)).getIsSmilingProbability()+"  "+faces.get(faces.keyAt(0)).getLandmarks().size() );
-			joyVal = faces.get(faces.keyAt(0)).getIsSmilingProbability();
+			smileVal = faces.get(faces.keyAt(0)).getIsSmilingProbability();
+			leftEyeVal = faces.get(faces.keyAt(0)).getIsLeftEyeOpenProbability();
+			rightEyeVal= faces.get(faces.keyAt(0)).getIsRightEyeOpenProbability();
 		}
 	}
 }

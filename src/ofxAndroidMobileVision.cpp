@@ -8,7 +8,8 @@
 #include "ofLog.h"
 
 
-ofxAndroidMobileVision::ofxAndroidMobileVision(){
+ofxAndroidMobileVision::ofxAndroidMobileVision()
+        :threaded(true){
 
     if(!ofGetJavaVMPtr()){
         ofLogNotice("ofxAndroidMobileVision") << "setup(): couldn't find java virtual machine";
@@ -21,29 +22,38 @@ ofxAndroidMobileVision::ofxAndroidMobileVision(){
     }
     jclass localClass = env->FindClass("cc/ofxandroidmobilevisionlib/ofxAndroidMobileVisionLib");
     javaClass = (jclass) env->NewGlobalRef(localClass);
-    
-    
+
+
     if(!javaClass){
         ofLogError("ofxAndroidMobileVision") << "constructor: couldn't get java class for MobileVision";
         return;
     }
-    
-    
+
+
     jmethodID constructor = env->GetMethodID(javaClass,"<init>","()V");
     if(!constructor){
         ofLogError("ofxAndroidMobileVision") << "constructor: couldn't get java constructor for MobileVision";
         return;
     }
-    
+
     javaMobileVision = env->NewObject(javaClass,constructor);
     if(!javaMobileVision){
         ofLogError("ofxAndroidMobileVision") << "constructor: couldn't create java MobileVision";
         return;
     }
-    
+
     javaMobileVision = (jobject)env->NewGlobalRef(javaMobileVision);
-    
+
     ofLogNotice("ofx")<<"DONE";
+}
+
+ofxAndroidMobileVision::~ofxAndroidMobileVision(){
+    toAnalyze.close();
+  //  waitForThread(true);
+}
+
+bool ofxAndroidMobileVision::setThreaded(bool _threaded){
+    threaded = _threaded;
 }
 
 void ofxAndroidMobileVision::setup(){
@@ -51,21 +61,47 @@ void ofxAndroidMobileVision::setup(){
         ofLogError("ofxAndroidMobileVision") << "setup(): java SoundPlayer not loaded";
         return;
     }
-    
+
     JNIEnv *env = ofGetJNIEnv();
     jmethodID javaSetupMethod = env->GetMethodID(javaClass,"setup","()V");
     if(!javaSetupMethod){
         ofLogError("ofxAndroidMobileVision") << "setup(): couldn't get java setup for MobileVision";
         return;
     }
-    
-    env->CallVoidMethod(javaMobileVision,javaSetupMethod);    
+
+    env->CallVoidMethod(javaMobileVision,javaSetupMethod);
+
+    if(threaded){
+        startThread();
+    }
     return;
 }
 
-void ofxAndroidMobileVision::update(ofPixels pixels){
-     if(!javaMobileVision){
-        ofLogError("ofxAndroidMobileVision") << "update(): java SoundPlayer not loaded";
+void ofxAndroidMobileVision::update(ofPixels &pixels){
+    if(threaded) {
+        if (toAnalyze.empty()) {
+            toAnalyze.send(pixels);
+        }
+    } else {
+        process(pixels);
+    }
+}
+
+float ofxAndroidMobileVision::smileProbability(){
+    return smileVal;
+}
+
+float ofxAndroidMobileVision::leftEyeOpenProbability(){
+    return leftEyeVal;
+}
+
+float ofxAndroidMobileVision::rightEyeOpenProbability(){
+    return rightEyeVal;
+}
+
+void ofxAndroidMobileVision::process(ofPixels &pixels){
+    if(!javaMobileVision){
+        ofLogError("ofxAndroidMobileVision") << "update(): java not loaded";
         return;
     }
 
@@ -79,19 +115,18 @@ void ofxAndroidMobileVision::update(ofPixels pixels){
     jbyteArray arr = env->NewByteArray(pixels.size());
     env->SetByteArrayRegion( arr, 0, pixels.size(), (const signed char*) pixels.getData());
     env->CallVoidMethod(javaMobileVision,javaMethod, arr);
-    return;
+    env->DeleteLocalRef(arr);
+
+    // Get probabilities
+    smileVal      = env->CallFloatMethod(javaMobileVision, env->GetMethodID(javaClass,"smileProbability","()F") );
+    leftEyeVal  = env->CallFloatMethod(javaMobileVision, env->GetMethodID(javaClass,"leftEyeProbability","()F") );
+    rightEyeVal = env->CallFloatMethod(javaMobileVision, env->GetMethodID(javaClass,"rightEyeProbability","()F") );
 }
 
-float ofxAndroidMobileVision::joy(){
-	JNIEnv *env = ofGetJNIEnv();
-	jmethodID javaMethod = env->GetMethodID(javaClass,"joy","()F");
-	if(!javaMethod ){
-		ofLogError("ofxAndroidMobileVision") << "joy(): couldn't get java joy for MobileVision";
-		return 0;
-	}
-
-	float ret = env->CallFloatMethod(javaMobileVision,javaMethod );
-	return ret;
+void ofxAndroidMobileVision::threadedFunction(){
+    ofPixels p;
+    while(toAnalyze.receive(p)){
+        process(p);
+    }
 }
-
 #endif
