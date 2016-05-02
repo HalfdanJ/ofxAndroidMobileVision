@@ -106,7 +106,7 @@ void ofxAndroidMobileVision::process(ofPixels &pixels){
     }
 
     JNIEnv *env = ofGetJNIEnv();
-    jmethodID javaMethod = env->GetMethodID(javaClass,"update","([B)V");
+    jmethodID javaMethod = env->GetMethodID(javaClass,"update","([BII)V");
     if(!javaMethod ){
         ofLogError("ofxAndroidMobileVision") << "update(): couldn't get java update for MobileVision";
         return;
@@ -114,11 +114,11 @@ void ofxAndroidMobileVision::process(ofPixels &pixels){
 
     jbyteArray arr = env->NewByteArray(pixels.size());
     env->SetByteArrayRegion( arr, 0, pixels.size(), (const signed char*) pixels.getData());
-    env->CallVoidMethod(javaMobileVision,javaMethod, arr);
+    env->CallVoidMethod(javaMobileVision,javaMethod, arr, pixels.getWidth(), pixels.getHeight());
     env->DeleteLocalRef(arr);
 
     // Get probabilities
-    smileVal      = env->CallFloatMethod(javaMobileVision, env->GetMethodID(javaClass,"smileProbability","()F") );
+    smileVal    = env->CallFloatMethod(javaMobileVision, env->GetMethodID(javaClass,"smileProbability","()F") );
     leftEyeVal  = env->CallFloatMethod(javaMobileVision, env->GetMethodID(javaClass,"leftEyeProbability","()F") );
     rightEyeVal = env->CallFloatMethod(javaMobileVision, env->GetMethodID(javaClass,"rightEyeProbability","()F") );
 }

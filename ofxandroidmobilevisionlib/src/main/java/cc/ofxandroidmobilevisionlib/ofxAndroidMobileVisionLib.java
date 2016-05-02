@@ -95,7 +95,7 @@ public class ofxAndroidMobileVisionLib {
 		return rightEyeVal;
 	}
 
-	public void update(byte[] bytes){
+	public void update(byte[] bytes, int width, int height){
 		//Log.i(TAG, "Update "+String.valueOf(bytes.length));
 
 //		int nrOfPixels = bytes.length / 3; // Three bytes per pixel.
@@ -128,7 +128,7 @@ public class ofxAndroidMobileVisionLib {
 
 
 		Frame frame = new Frame.Builder()
-				.setImageData(buffer, 640, 480, 17)
+				.setImageData(buffer, width, height, 17)
 				//.setBitmap(bitmap)
 				.build();
 
