@@ -120,22 +120,14 @@ public class ofxAndroidMobileVisionLib {
 
 		Bitmap bitmap = Bitmap.createBitmap(intColors, intWidth, intHeight, Bitmap.Config.ARGB_8888);
 */
-		//Log.i(TAG, String.valueOf(Color.green(intColors[100])));
-		//Log.i(TAG, String.valueOf(bytes[100]));
+
+
 
 		ByteBuffer buffer  = ByteBuffer.wrap(bytes);
-		//Log.i(TAG, "Bitmap"+String.valueOf(bitmap.getWidth()));
-
-
 		Frame frame = new Frame.Builder()
 				.setImageData(buffer, width, height, 17)
 				//.setBitmap(bitmap)
 				.build();
-
-		//Bitmap bitmap = new Bitmap();
-		//
-	//	detector.receiveFrame(frame);
-		//Log.i(TAG, "Faces "+String.valueOf(faces.size()));
 
 		SparseArray<Face> faces = detector.detect(frame);
 		if(faces.size() > 0) {
