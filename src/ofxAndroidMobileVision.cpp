@@ -74,6 +74,18 @@ void ofxAndroidMobileVision::setup(){
     return;
 }
 
+void ofxAndroidMobileVision::setTrackProminentFaceOnly(bool prominentOnly){
+    if(!javaMobileVision) return;
+    JNIEnv *env = ofGetJNIEnv();
+    env->CallVoidMethod(javaMobileVision,env->GetMethodID(javaClass,"setProminentFaceOnly","(Z)V"), prominentOnly);
+}
+
+void ofxAndroidMobileVision::setMinFaceSize(float minFaceSize){
+    if(!javaMobileVision) return;
+    JNIEnv *env = ofGetJNIEnv();
+    env->CallVoidMethod(javaMobileVision,env->GetMethodID(javaClass,"setMinFaceSize","(F)V"), minFaceSize);
+}
+
 void ofxAndroidMobileVision::update(ofPixels &pixels){
     if(threaded) {
         if (toAnalyze.empty()) {

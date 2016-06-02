@@ -33,26 +33,23 @@ public:
 
 	bool setThreaded(bool threaded);
 
+	void setTrackProminentFaceOnly(bool prominentOnly);
+	void setMinFaceSize(float minFaceSize);
+
 	vector<ofxAndroidMobileVisionFace> &getFaces();
 private:
     jclass javaClass;
     jobject javaMobileVision;
 
 	bool threaded;
-	ofMutex mutex;
+
 	ofThreadChannel<ToAnalyzeData> toAnalyze;
 	ofThreadChannel<vector<ofxAndroidMobileVisionFace> > fromAnalyze;
 
-	float smileVal, leftEyeVal, rightEyeVal;
-
+	vector<ofxAndroidMobileVisionFace> faces;
 
 	void threadedFunction();
 	void process(ofPixels &pixels);
-
-	vector<ofxAndroidMobileVisionFace> faces;
-
-
-    
 };
 
 #endif

@@ -82,6 +82,7 @@ public class ofxAndroidMobileVisionLib {
 				ret[i * 2 + 3 + 1] = -1;
 			}
 		}
+
 		return ret;
 	}
 

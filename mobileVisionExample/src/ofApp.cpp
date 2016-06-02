@@ -32,7 +32,7 @@ void ofApp::draw(){
 	ofNoFill();
 	for(auto face : vision.getFaces()){
 		for(int i=0;i<12;i++){
-			ofDrawSphere(face.landmarks[i].x,face.landmarks[i].y, 10);
+			ofDrawCircle(face.landmarks[i].x,face.landmarks[i].y, 10);
 		}
 	}
 	ofFill();
@@ -53,84 +53,4 @@ void ofApp::draw(){
 		ofTranslate(0,150);
 	}
 	ofPopMatrix();
-}
-
-//--------------------------------------------------------------
-void ofApp::keyPressed  (int key){ 
-	
-}
-
-//--------------------------------------------------------------
-void ofApp::keyReleased(int key){ 
-	
-}
-
-//--------------------------------------------------------------
-void ofApp::windowResized(int w, int h){
-
-}
-
-//--------------------------------------------------------------
-void ofApp::touchDown(int x, int y, int id){
-
-}
-
-//--------------------------------------------------------------
-void ofApp::touchMoved(int x, int y, int id){
-
-}
-
-//--------------------------------------------------------------
-void ofApp::touchUp(int x, int y, int id){
-
-}
-
-//--------------------------------------------------------------
-void ofApp::touchDoubleTap(int x, int y, int id){
-
-}
-
-//--------------------------------------------------------------
-void ofApp::touchCancelled(int x, int y, int id){
-
-}
-
-//--------------------------------------------------------------
-void ofApp::swipe(ofxAndroidSwipeDir swipeDir, int id){
-
-}
-
-//--------------------------------------------------------------
-void ofApp::pause(){
-
-}
-
-//--------------------------------------------------------------
-void ofApp::stop(){
-
-}
-
-//--------------------------------------------------------------
-void ofApp::resume(){
-
-}
-
-//--------------------------------------------------------------
-void ofApp::reloadTextures(){
-
-}
-
-//--------------------------------------------------------------
-bool ofApp::backPressed(){
-	return false;
-}
-
-//--------------------------------------------------------------
-void ofApp::okPressed(){
-
-}
-
-//--------------------------------------------------------------
-void ofApp::cancelPressed(){
-
 }
