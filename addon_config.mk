@@ -61,5 +61,5 @@ common:
 	# ADDON_LIBS_EXCLUDE =
 
 android:
-
+	ADDON_ANDROID_LIBS = ofxAndroidMobileVisionLib
 	# ADDON_INCLUDES = "src"

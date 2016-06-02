@@ -1,2 +1,6 @@
 mobileVisionExample/libs
 .idea
+.DS_Store
+mobileVisionExample/gradle
+mobileVisionExample/gradlew
+mobileVisionExample/gradlew.bat

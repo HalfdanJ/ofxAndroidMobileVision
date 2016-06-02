@@ -4,56 +4,40 @@ import android.content.Context;
 
 import com.google.android.gms.vision.Detector;
 import com.google.android.gms.vision.Frame;
-import com.google.android.gms.vision.MultiProcessor;
-import com.google.android.gms.vision.Tracker;
 import com.google.android.gms.vision.face.Face;
 import com.google.android.gms.vision.face.FaceDetector;
+import com.google.android.gms.vision.face.Landmark;
 
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.Color;
+import android.graphics.ImageFormat;
 import android.util.Log;
 import android.util.SparseArray;
 
 import java.nio.ByteBuffer;
+import java.util.List;
 
 import cc.openframeworks.OFAndroid;
 
-
-class ofxFaceTracker extends Tracker<Face>{
-	private static final String TAG = "ofxMobileVisionTracker";
-
-	@Override
-	public void onNewItem(int id, Face item) {
-		Log.i(TAG, "FAAAACE");
-
-		super.onNewItem(id, item);
-	}
-
-	@Override
-	public void onUpdate(Detector.Detections<Face> detections, Face item) {
-		Log.i(TAG, "Update"+ item.getIsSmilingProbability());
-
-		super.onUpdate(detections, item);
-	}
-}
-
 public class ofxAndroidMobileVisionLib {
-	private static final String TAG = "ofxMobileVision";
-	FaceDetector detector;
+	private static final String TAG = "ofxAndroidMobileVision";
+
+	private FaceDetector detector;
+	private SparseArray<Face> faces;
+	private boolean isInitialized = false;
+
+	private float minFaceSize = 0.15f;
+	private boolean prominentFaceOnly = true;
+
 	public void setup(){
 		Context context = OFAndroid.getContext();
 
 		detector = new FaceDetector.Builder(context)
 				.setClassificationType(FaceDetector.ALL_CLASSIFICATIONS)
-				//.setLandmarkType(FaceDetector.ALL_LANDMARKS)
+				.setLandmarkType(FaceDetector.ALL_LANDMARKS)
 				.setMode(FaceDetector.FAST_MODE)
+				.setProminentFaceOnly(prominentFaceOnly)
+				.setMinFaceSize(minFaceSize)
 				.build();
 
-		/*detector.setProcessor(
-				new MultiProcessor.Builder<>(new GraphicFaceTrackerFactory())
-						.build());
-*/
 		if (!detector.isOperational()) {
 			// Note: The first time that an app using face API is installed on a device, GMS will
 			// download a native library to the device in order to do detection.  Usually this
@@ -67,73 +51,51 @@ public class ofxAndroidMobileVisionLib {
 		}
 
 		Detector.Processor<Face> processor;
-/*
-		MultiProcessor.Factory<Face> factory = new MultiProcessor.Factory<Face>() {
-			@Override
-			public Tracker<Face> create(Face face) {
-			//	return new GooglyFaceTracker(mGraphicOverlay);
-				return new ofxFaceTracker();
+
+		isInitialized = true;
+	}
+
+
+	public void setMinFaceSize(float _minFaceSize){
+		if(isInitialized) Log.w(TAG,"setMinFaceSize() cannot be called after setup()");
+		minFaceSize = _minFaceSize;
+	}
+
+	public void setProminentFaceOnly(boolean _prominentFaceOnly){
+		if(isInitialized) Log.w(TAG,"setProminentFaceOnly() cannot be called after setup()");
+		prominentFaceOnly = _prominentFaceOnly;
+	}
+
+	public float[] getData(int face){
+		float ret[] = new float[3+24];
+		ret[0] = faces.get(faces.keyAt(face)).getIsSmilingProbability();
+		ret[1] = faces.get(faces.keyAt(face)).getIsLeftEyeOpenProbability();
+		ret[2] = faces.get(faces.keyAt(face)).getIsRightEyeOpenProbability();
+
+		List<Landmark> landmarks = faces.get(faces.keyAt(face)).getLandmarks();
+		for(int i=0;i<12;i++){
+			if(landmarks.size() > i) {
+				ret[i * 2 + 3	 ] = landmarks.get(i).getPosition().x;
+				ret[i * 2 + 3 + 1] = landmarks.get(i).getPosition().y;
+			} else {
+				ret[i * 2 + 3	 ] = -1;
+				ret[i * 2 + 3 + 1] = -1;
 			}
-
-
-		};
-		processor = new MultiProcessor.Builder<>(factory).build();
-		detector.setProcessor(processor);*/
-
-	}
-
-	public float smileVal, leftEyeVal, rightEyeVal;
-
-	public float smileProbability(){
-		return smileVal;
-	}
-
-	public float leftEyeProbability(){
-		return leftEyeVal;
-	}
-	public float rightEyeProbability(){
-		return rightEyeVal;
-	}
-
-	public void update(byte[] bytes, int width, int height){
-		//Log.i(TAG, "Update "+String.valueOf(bytes.length));
-
-//		int nrOfPixels = bytes.length / 3; // Three bytes per pixel.
-//		int pixels[] = new int[nrOfPixels];
-		/*for(int i = 0; i < nrOfPixels; i++) {
-			int r = bytes[3*i];
-			int g = bytes[3*i + 1];
-			int b = bytes[3*i + 2];
-			pixels[i] = Color.rgb(r,g,b);
-		}*/
-		/*int intByteCount = bytes.length;
-		int[] intColors = new int[intByteCount / 3];
-		int intWidth = 640;
-		int intHeight = 480;
-		final int intAlpha = 255;
-		if ((intByteCount / 3) != (intWidth * intHeight)) {
-			throw new ArrayStoreException();
 		}
-		for (int intIndex = 0; intIndex < intByteCount - 2; intIndex = intIndex + 3) {
-			intColors[intIndex / 3] = (intAlpha << 24) | (bytes[intIndex] << 16) | (bytes[intIndex + 1] << 8) | bytes[intIndex + 2];
-		}
+		return ret;
+	}
 
-		Bitmap bitmap = Bitmap.createBitmap(intColors, intWidth, intHeight, Bitmap.Config.ARGB_8888);
-*/
+	public int update(byte[] bytes, int width, int height){
+		if(!detector.isOperational()) return -1;
 
-
-
+		// Wrap image bytes
 		ByteBuffer buffer  = ByteBuffer.wrap(bytes);
 		Frame frame = new Frame.Builder()
-				.setImageData(buffer, width, height, 17)
-				//.setBitmap(bitmap)
+				.setImageData(buffer, width, height, ImageFormat.NV21)
 				.build();
 
-		SparseArray<Face> faces = detector.detect(frame);
-		if(faces.size() > 0) {
-			smileVal = faces.get(faces.keyAt(0)).getIsSmilingProbability();
-			leftEyeVal = faces.get(faces.keyAt(0)).getIsLeftEyeOpenProbability();
-			rightEyeVal= faces.get(faces.keyAt(0)).getIsRightEyeOpenProbability();
-		}
+		// Run face detector
+		faces = detector.detect(frame);
+		return faces.size();
 	}
 }
