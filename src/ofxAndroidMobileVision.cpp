@@ -1,12 +1,6 @@
 #include "ofxAndroidMobileVision.h"
 #ifdef TARGET_ANDROID
-
-
-#include <jni.h>
-#include <graphics/ofImage.h>
-#include "ofxAccelerometer.h"
 #include "ofxAndroidUtils.h"
-#include "ofLog.h"
 
 
 ofxAndroidMobileVision::ofxAndroidMobileVision()
@@ -106,7 +100,6 @@ vector<ofxAndroidMobileVisionFace> & ofxAndroidMobileVision::getFaces(){
 }
 
 void ofxAndroidMobileVision::process(ofPixels &pixels){
-
     if(!javaMobileVision){
         ofLogError("ofxAndroidMobileVision") << "update(): java not loaded";
         return;
@@ -119,21 +112,16 @@ void ofxAndroidMobileVision::process(ofPixels &pixels){
         return;
     }
 
-    clock_t start = clock() ;
-
     jbyteArray arr = env->NewByteArray(pixels.size());
     env->SetByteArrayRegion( arr, 0, pixels.size(), (const signed char*) pixels.getData());
     int numFaces = env->CallIntMethod(javaMobileVision, javaMethod, arr, pixels.getWidth(), pixels.getHeight());
     env->DeleteLocalRef(arr);
-    clock_t end = clock() ;
 
     vector<ofxAndroidMobileVisionFace> analyzedfaces;
     for(int i=0;i<numFaces;i++) {
         // Get data
         auto method = env->GetMethodID(javaClass, "getData", "(I)[F");
         jfloatArray data = (jfloatArray) env->CallObjectMethod(javaMobileVision, method, 0);
-
-        jsize len = env->GetArrayLength(data);
 
         jboolean isCopy;
         jfloat *body =  env->GetFloatArrayElements(data, &isCopy);
@@ -152,8 +140,6 @@ void ofxAndroidMobileVision::process(ofPixels &pixels){
     }
 
     fromAnalyze.send(analyzedfaces);
-
-    double elapsed_time = (end-start)/(double)CLOCKS_PER_SEC ;
 }
 
 void ofxAndroidMobileVision::threadedFunction(){

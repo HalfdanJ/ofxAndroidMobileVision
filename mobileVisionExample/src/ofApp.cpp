@@ -2,8 +2,12 @@
 
 //--------------------------------------------------------------
 void ofApp::setup(){
+	// Use frontal facing camera
 	grabber.setDeviceID(1);
+
+	// Use native (NV21) pixel format for best performance
 	grabber.setPixelFormat(OF_PIXELS_NV21);
+
 	grabber.setup(640,360);
 
 	vision.setup();
@@ -15,7 +19,6 @@ void ofApp::update(){
 	if(grabber.isFrameNew()) {
 		vision.update(grabber.getPixels());
 	}
-
 }
 
 //--------------------------------------------------------------
@@ -23,6 +26,7 @@ void ofApp::draw(){
 	ofBackground(0);
 	ofSetColor(255);
 
+	// Calculate scaling factor in order for image to fill screen
 	float scale = (ofGetWidth() - 300) / grabber.getWidth();
 	ofPushMatrix();
 	ofScale(scale,scale);
@@ -30,6 +34,7 @@ void ofApp::draw(){
 	grabber.draw(0,0);
 
 	ofNoFill();
+	// Iterate over all faces and draw landmarks
 	for(auto face : vision.getFaces()){
 		for(int i=0;i<12;i++){
 			ofDrawCircle(face.landmarks[i].x,face.landmarks[i].y, 10);
@@ -40,6 +45,7 @@ void ofApp::draw(){
 	ofPopMatrix();
 
 	ofPushMatrix();
+	// Iterate faces and draw bars with probabilities
 	for(auto face : vision.getFaces()) {
 		ofDrawBitmapString("Left Eye Open", ofGetWidth() - 290, 20);
 		ofDrawBitmapString("Right Eye Open", ofGetWidth() - 290, 70);

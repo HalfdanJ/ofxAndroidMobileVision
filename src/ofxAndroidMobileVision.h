@@ -37,6 +37,7 @@ public:
 	void setMinFaceSize(float minFaceSize);
 
 	vector<ofxAndroidMobileVisionFace> &getFaces();
+
 private:
     jclass javaClass;
     jobject javaMobileVision;
