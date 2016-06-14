@@ -137,6 +137,8 @@ void ofxAndroidMobileVision::process(ofPixels &pixels){
             face.landmarks.push_back(p);
         }
         analyzedfaces.push_back(face);
+
+        env->DeleteLocalRef(data);
     }
 
     fromAnalyze.send(analyzedfaces);

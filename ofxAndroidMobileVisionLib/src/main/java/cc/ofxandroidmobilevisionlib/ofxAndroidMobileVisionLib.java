@@ -68,18 +68,20 @@ public class ofxAndroidMobileVisionLib {
 
 	public float[] getData(int face){
 		float ret[] = new float[3+24];
-		ret[0] = faces.get(faces.keyAt(face)).getIsSmilingProbability();
-		ret[1] = faces.get(faces.keyAt(face)).getIsLeftEyeOpenProbability();
-		ret[2] = faces.get(faces.keyAt(face)).getIsRightEyeOpenProbability();
+		if(faces.size() > face) {
+			ret[0] = faces.get(faces.keyAt(face)).getIsSmilingProbability();
+			ret[1] = faces.get(faces.keyAt(face)).getIsLeftEyeOpenProbability();
+			ret[2] = faces.get(faces.keyAt(face)).getIsRightEyeOpenProbability();
 
-		List<Landmark> landmarks = faces.get(faces.keyAt(face)).getLandmarks();
-		for(int i=0;i<12;i++){
-			if(landmarks.size() > i) {
-				ret[i * 2 + 3	 ] = landmarks.get(i).getPosition().x;
-				ret[i * 2 + 3 + 1] = landmarks.get(i).getPosition().y;
-			} else {
-				ret[i * 2 + 3	 ] = -1;
-				ret[i * 2 + 3 + 1] = -1;
+			List<Landmark> landmarks = faces.get(faces.keyAt(face)).getLandmarks();
+			for (int i = 0; i < 12; i++) {
+				if (landmarks.size() > i) {
+					ret[i * 2 + 3] = landmarks.get(i).getPosition().x;
+					ret[i * 2 + 3 + 1] = landmarks.get(i).getPosition().y;
+				} else {
+					ret[i * 2 + 3] = -1;
+					ret[i * 2 + 3 + 1] = -1;
+				}
 			}
 		}
 
