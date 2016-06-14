@@ -13,4 +13,6 @@ public:
 
 	ofxAndroidMobileVision vision;
 	ofVideoGrabber grabber;
+
+	ofTrueTypeFont font;
 };
