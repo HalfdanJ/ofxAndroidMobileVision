@@ -4,3 +4,8 @@ mobileVisionExample/libs
 mobileVisionExample/gradle
 mobileVisionExample/gradlew
 mobileVisionExample/gradlew.bat
+mobileVisionExample/build.gradle
+mobileVisionExample/mobileVisionExample.iml
+mobileVisionExample/res
+mobileVisionExample/settings.gradle
+ofxAndroidMobileVisionLib/ofxAndroidMobileVision.iml
