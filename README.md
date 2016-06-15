@@ -6,6 +6,7 @@ The addons works only on Android, as it accesses a native android library.
 
 ## Example app
 ![Preview](ofxaddons_thumbnail.png)
+
 There is one example app that demonstrates how to work with landmarks and eye and smile probabilities. Use the project generator to generate the project files for android studio
 
 ## Requirements
