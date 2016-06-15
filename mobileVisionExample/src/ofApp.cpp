@@ -35,7 +35,7 @@ void ofApp::update(){
 //--------------------------------------------------------------
 void ofApp::draw(){
 	ofBackground(0);
-	ofSetColor(255);
+	ofSetColor(170);
 
 	// Calculate scaling factor in order for image to fill screen
 	float scale = ofGetWidth() / grabber.getWidth();
@@ -45,14 +45,19 @@ void ofApp::draw(){
 	grabber.draw(0,0);
 
 	ofNoFill();
-	// Iterate over all faces and draw landmarks
+	// Iterate over all faces and draw circles on landmarks
 	for(auto face : vision.getFaces()){
 		for(int i=0;i<12;i++){
+			ofSetColor(0,150);
+			ofSetLineWidth(25);
+			ofDrawCircle(face.landmarks[i].x,face.landmarks[i].y, 10);
+			ofSetColor(255);
+			ofSetLineWidth(2);
 			ofDrawCircle(face.landmarks[i].x,face.landmarks[i].y, 10);
 		}
 	}
+	ofSetLineWidth(1);
 	ofFill();
-
 	ofPopMatrix();
 
 	ofPushMatrix();
