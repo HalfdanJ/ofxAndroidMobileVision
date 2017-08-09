@@ -15,7 +15,7 @@
 # and the PG will write to the console the kind of error and in which line it is
 
 meta:
-	ADDON_NAME = ofxAndroidSensors
+	ADDON_NAME = ofxAndroidMobileVision
 	ADDON_DESCRIPTION = Addon for accessing native sensors on android
 	ADDON_AUTHOR = Jonas Jongejan
 	ADDON_TAGS = "utils"
