@@ -2,6 +2,7 @@
 #ifdef TARGET_ANDROID
 #include "ofxAndroidUtils.h"
 
+#include "ofMain.h"
 
 ofxAndroidMobileVision::ofxAndroidMobileVision()
         :threaded(true){
