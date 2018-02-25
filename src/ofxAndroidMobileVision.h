@@ -8,7 +8,7 @@
 #include <jni.h>
 
 #include "ofBaseTypes.h"
-
+#include "ofMain.h"
 
 struct ofxAndroidMobileVisionFace {
 	float smileProbability;
