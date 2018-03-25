@@ -8,7 +8,6 @@
 
 #include <jni.h>
 #include "ofLog.h"
-#include "ofxAndroidMobileVision.h"
 #include "ofBaseTypes.h"
 
 
