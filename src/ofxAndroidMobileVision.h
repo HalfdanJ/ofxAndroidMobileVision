@@ -2,11 +2,13 @@
 #include "ofConstants.h"
 #include "ofThread.h"
 #include "ofThreadChannel.h"
-
+#include "ofVectorMath.h"
+#include "ofPixels.h"
 #ifdef TARGET_ANDROID
 
 #include <jni.h>
-
+#include "ofLog.h"
+#include "ofxAndroidMobileVision.h"
 #include "ofBaseTypes.h"
 
 
@@ -15,12 +17,13 @@ struct ofxAndroidMobileVisionFace {
 	float leftEyeOpenProbability;
 	float rightEyeOpenProbability;
 
-	vector<ofVec2f> landmarks;
+	std::vector<ofVec2f> landmarks;
 };
 
 struct ToAnalyzeData{
 	ofPixels pixels;
 };
+
 
 class ofxAndroidMobileVision : ofThread{
 public:
@@ -36,7 +39,7 @@ public:
 	void setTrackProminentFaceOnly(bool prominentOnly);
 	void setMinFaceSize(float minFaceSize);
 
-	vector<ofxAndroidMobileVisionFace> &getFaces();
+	std::vector<ofxAndroidMobileVisionFace> &getFaces();
 
 private:
     jclass javaClass;
@@ -45,9 +48,9 @@ private:
 	bool threaded;
 
 	ofThreadChannel<ToAnalyzeData> toAnalyze;
-	ofThreadChannel<vector<ofxAndroidMobileVisionFace> > fromAnalyze;
+	ofThreadChannel<std::vector<ofxAndroidMobileVisionFace> > fromAnalyze;
 
-	vector<ofxAndroidMobileVisionFace> faces;
+	std::vector<ofxAndroidMobileVisionFace> faces;
 
 	void threadedFunction();
 	void process(ofPixels &pixels);
